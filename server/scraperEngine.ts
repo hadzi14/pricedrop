@@ -2,10 +2,22 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { getSupabaseAdmin } from './supabaseAdmin.js';
 
+// Dodajemo lažne browser headere da nas sajtovi ne bi blokirali (Cloudflare/Anti-bot)
+const SCRAPER_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+  'Accept-Language': 'sr,en-US;q=0.7,en;q=0.3',
+  'Connection': 'keep-alive',
+};
+
 export async function scrapeALSU() {
   const opportunities: any[] = [];
   try {
-    const { data } = await axios.get('https://alsu.gov.rs/cir/stecajni-duznici/oglasi/', { timeout: 10000 });
+    // Promenjen URL jer stari vraca 404
+    const { data } = await axios.get('https://alsu.gov.rs/cir/', { 
+      timeout: 10000,
+      headers: SCRAPER_HEADERS
+    });
     const $ = cheerio.load(data);
 
     // Primer selektora (stilizovano kao da je produkcija, uz mock fallback u slucaju da sajt nema tacnu strukturu)
@@ -41,7 +53,10 @@ export async function scrapeALSU() {
 export async function scrapeEAukcija() {
   const opportunities: any[] = [];
   try {
-    const { data } = await axios.get('https://eaukcija.sud.rs/#/javni-izvrsitelji', { timeout: 10000 });
+    const { data } = await axios.get('https://eaukcija.sud.rs/#/javni-izvrsitelji', { 
+      timeout: 10000,
+      headers: SCRAPER_HEADERS
+    });
     const $ = cheerio.load(data);
 
     // E-aukcija SPA fallback selektori
@@ -77,7 +92,11 @@ export async function scrapeEAukcija() {
 export async function scrapeRetailOutlets() {
   const opportunities: any[] = [];
   try {
-    const { data } = await axios.get('https://eplaneta.rs/outlet.html', { timeout: 10000 });
+    // Promenjen URL iz outlet.html u /outlet
+    const { data } = await axios.get('https://eplaneta.rs/outlet', { 
+      timeout: 10000,
+      headers: SCRAPER_HEADERS
+    });
     const $ = cheerio.load(data);
 
     $('.product-item-info').each((_, el) => {
