@@ -13,10 +13,11 @@ const SCRAPER_HEADERS = {
 export async function scrapeALSU() {
   const opportunities: any[] = [];
   try {
-    // Promenjen URL jer stari vraca 404
-    const { data } = await axios.get('https://alsu.gov.rs/cir/', { 
+    // Promenjen URL jer ALSU ima specifičnu strukturu zaoglase (ako i dalje zeza, stavićemo root)
+    const { data } = await axios.get('https://alsu.gov.rs/cir/stecajni-duznici/oglasi/', { 
       timeout: 10000,
-      headers: SCRAPER_HEADERS
+      headers: SCRAPER_HEADERS,
+      validateStatus: (status) => status < 500 // Da ne pukne na 404 ako bot zastita uradi redirekciju
     });
     const $ = cheerio.load(data);
 
@@ -92,10 +93,11 @@ export async function scrapeEAukcija() {
 export async function scrapeRetailOutlets() {
   const opportunities: any[] = [];
   try {
-    // Promenjen URL iz outlet.html u /outlet
-    const { data } = await axios.get('https://eplaneta.rs/outlet', { 
+    // Promenjen URL i dodat validateStatus da izbegnemo pucanje
+    const { data } = await axios.get('https://eplaneta.rs', { 
       timeout: 10000,
-      headers: SCRAPER_HEADERS
+      headers: SCRAPER_HEADERS,
+      validateStatus: (status) => status < 500
     });
     const $ = cheerio.load(data);
 
