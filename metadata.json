@@ -1,0 +1,6 @@
+{
+  "name": "Pricedrop",
+  "description": "Kupuj robu iz stečajeva, zaplena i outleta sa 60%+ popusta.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
